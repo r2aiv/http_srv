@@ -17,7 +17,7 @@ struct sockaddr_in CliAddr;
 int AccSock;
 
 unsigned char MessageBuff[1024];
-unsigned char ReadFileBuff;
+char ReadFileBuff;
 
 FILE *HtmlFile;
 
@@ -52,18 +52,20 @@ SockAddr.sin_addr.s_addr=INADDR_ANY;
     }
     
 
-    HtmlFile=fopen("index.html","r");
-    if(HtmlFile==NULL)
-    {
-    printf("Error opening file!\r\n");
-    return -1;
-    }
+    
 
     while(1)
     {
     socklen_t AddrLen=sizeof(CliAddr);
     AccSock=accept(SrvSock,(struct sockaddr *)&CliAddr,&AddrLen);
     printf("Accepted: %s\r\n",inet_ntoa(CliAddr.sin_addr));
+
+    HtmlFile=fopen("index.html","r");
+    if(HtmlFile==NULL)
+    {
+    printf("Error opening file!\r\n");
+    return -1;
+    }
 
     sprintf(MessageBuff,"HTTP/1.1 200 OK\n\n");
     write(AccSock,MessageBuff,strlen(MessageBuff));
@@ -73,6 +75,7 @@ SockAddr.sin_addr.s_addr=INADDR_ANY;
     fread((char *)&ReadFileBuff,1,1,HtmlFile);
     write(AccSock,(char *)&ReadFileBuff,sizeof(ReadFileBuff));
     }
+
     fclose(HtmlFile);
 
     shutdown(AccSock,SHUT_RDWR);
