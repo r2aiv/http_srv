@@ -67,7 +67,4 @@ SockAddr.sin_addr.s_addr=INADDR_ANY;
     close(AccSock);
     printf("Connection closed!\r\n");
     }
-    
-    
-    
 }
