@@ -17,6 +17,9 @@ struct sockaddr_in CliAddr;
 int AccSock;
 
 unsigned char MessageBuff[1024];
+unsigned char ReadFileBuff;
+
+FILE *HtmlFile;
 
 
 memset((void *)&MessageBuff,0,sizeof(MessageBuff));
@@ -48,20 +51,30 @@ SockAddr.sin_addr.s_addr=INADDR_ANY;
     return stat;
     }
     
+
+    HtmlFile=fopen("index.html","r");
+    if(HtmlFile==NULL)
+    {
+    printf("Error opening file!\r\n");
+    return -1;
+    }
+
     while(1)
     {
     socklen_t AddrLen=sizeof(CliAddr);
     AccSock=accept(SrvSock,(struct sockaddr *)&CliAddr,&AddrLen);
     printf("Accepted: %s\r\n",inet_ntoa(CliAddr.sin_addr));
 
-    sprintf(MessageBuff,"HTTP/1.1 200 OK\n\n\
-<html><head><title>DEVCHONKA!</title></head> \
-<body>	 \
-<a href=\"http://vk.com/brithelp\">BRIT-KOMMANDA!</a> \
-<br><i>Compiled at %s %s</i></body></html>",__DATE__,__TIME__);
-
-    
+    sprintf(MessageBuff,"HTTP/1.1 200 OK\n\n");
     write(AccSock,MessageBuff,strlen(MessageBuff));
+
+    while(!feof(HtmlFile))
+    {
+    fread((char *)&ReadFileBuff,1,1,HtmlFile);
+    write(AccSock,(char *)&ReadFileBuff,sizeof(ReadFileBuff));
+    }
+    fclose(HtmlFile);
+
     shutdown(AccSock,SHUT_RDWR);
     close(AccSock);
     printf("Connection closed!\r\n");
