@@ -67,7 +67,8 @@ SockAddr.sin_addr.s_addr=INADDR_ANY;
     return -1;
     }
 
-    sprintf(MessageBuff,"HTTP/1.1 200 OK\n\n");
+    sprintf(MessageBuff,"HTTP/1.1 200 OK\r\n \
+Content-type: text/html\n\n");
     write(AccSock,MessageBuff,strlen(MessageBuff));
 
     while(!feof(HtmlFile))
